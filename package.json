@@ -48,6 +48,7 @@
     "build": "pnpm run codegen && tsdown",
     "clean": "rm -rf dist src/generated",
     "typecheck": "tsc --noEmit",
+    "test:smoke:sse": "pnpm run build && node --test test/graphql-sse.smoke.test.mjs",
     "check": "pnpm run codegen && pnpm run typecheck && pnpm run build"
   },
   "dependencies": {
