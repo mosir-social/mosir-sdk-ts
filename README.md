@@ -239,7 +239,9 @@ Authentication is optional. Pass `token` for authenticated operations, or omit i
 ```ts
 import { createMosirClient, GetNotificationsDocument } from 'mosir-sdk-ts'
 
-const client = createMosirClient({ token })
+const client = createMosirClient({
+  token: process.env.MOSIR_API_TOKEN,
+})
 
 const data = await client.request(GetNotificationsDocument, {
   limit: 20,
