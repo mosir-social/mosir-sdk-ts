@@ -52,18 +52,18 @@
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
-    "graphql": "^16.11.0",
-    "graphql-request": "^7.3.1",
-    "graphql-sse": "^2.5.4"
+    "graphql": "^16.14.0",
+    "graphql-request": "^7.4.0",
+    "graphql-sse": "^2.6.0"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.7",
-    "@graphql-codegen/typed-document-node": "^5.1.0",
-    "@graphql-codegen/typescript": "^4.1.6",
-    "@graphql-codegen/typescript-generic-sdk": "^4.0.8",
-    "@graphql-codegen/typescript-operations": "^4.6.1",
-    "@types/node": "^22.15.30",
+    "@graphql-codegen/cli": "^7.0.0",
+    "@graphql-codegen/typed-document-node": "^7.0.0",
+    "@graphql-codegen/typescript": "^6.0.1",
+    "@graphql-codegen/typescript-generic-sdk": "^5.0.1",
+    "@graphql-codegen/typescript-operations": "^6.0.2",
+    "@types/node": "^25.9.1",
     "tsdown": "^0.22.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }
