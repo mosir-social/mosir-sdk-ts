@@ -1,0 +1,58 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install dependencies with pnpm
+    cmds:
+      - pnpm install
+
+  codegen:
+    desc: Generate GraphQL SDK artifacts from public schema and operations
+    cmds:
+      - pnpm run codegen
+    sources:
+      - ./public.graphqls
+      - ./public.operations.graphql
+      - ./codegen.ts
+      - ./scripts/fix-generated-sdk.mjs
+      - ./package.json
+      - ./pnpm-lock.yaml
+    generates:
+      - ./src/generated/graphql.ts
+      - ./src/generated/sdk.ts
+
+  build:
+    desc: Build the SDK as ESM + CJS with declaration files
+    deps: [codegen]
+    cmds:
+      - pnpm run build
+    sources:
+      - ./src/**/*.ts
+      - ./public.graphqls
+      - ./public.operations.graphql
+      - ./codegen.ts
+      - ./scripts/fix-generated-sdk.mjs
+      - ./tsconfig.json
+      - ./tsdown.config.ts
+      - ./package.json
+      - ./pnpm-lock.yaml
+    generates:
+      - ./dist/index.js
+      - ./dist/index.cjs
+      - ./dist/index.d.ts
+
+  typecheck:
+    desc: Run TypeScript typechecking
+    deps: [codegen]
+    cmds:
+      - pnpm run typecheck
+
+  clean:
+    desc: Remove generated and build output
+    cmds:
+      - pnpm run clean
+
+  check:
+    desc: Run code generation, typechecking, and build
+    cmds:
+      - pnpm run check

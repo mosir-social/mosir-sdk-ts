@@ -1,0 +1,57 @@
+{
+  "name": "mosir-sdk-ts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TypeScript SDK for the Mosir public GraphQL API",
+  "license": "UNLICENSED",
+  "type": "module",
+  "packageManager": "pnpm@11.1.0",
+  "engines": {
+    "node": ">=18",
+    "bun": ">=1.3.11"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./generated": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "public.graphqls",
+    "public.operations.graphql",
+    "README.md"
+  ],
+  "scripts": {
+    "codegen": "graphql-codegen --config codegen.ts && node ./scripts/fix-generated-sdk.mjs",
+    "build": "pnpm run codegen && tsdown",
+    "clean": "rm -rf dist src/generated",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm run codegen && pnpm run typecheck && pnpm run build"
+  },
+  "dependencies": {
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "graphql": "^16.11.0",
+    "graphql-request": "^7.3.1",
+    "graphql-sse": "^2.5.4"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-codegen/typed-document-node": "^5.1.0",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-generic-sdk": "^4.0.8",
+    "@graphql-codegen/typescript-operations": "^4.6.1",
+    "@types/node": "^22.15.30",
+    "tsdown": "^0.12.7",
+    "typescript": "^5.8.3"
+  }
+}
