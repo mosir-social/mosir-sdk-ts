@@ -25,7 +25,17 @@ WebSocket support is intentionally not bundled. If you want WebSocket subscripti
 ## Install
 
 ```bash
+npm install mosir-sdk-ts
+```
+
+or:
+
+```bash
 pnpm add mosir-sdk-ts
+# or
+yarn add mosir-sdk-ts
+# or
+bun add mosir-sdk-ts
 ```
 
 ## Quick start
