@@ -37,8 +37,8 @@ import { createMosirClient } from 'mosir-sdk-ts'
 
 const client = createMosirClient({})
 
-const topics = await client.getTopics({ limit: 10 })
-console.log(topics.getTopics.map((topic) => topic.title))
+const post = await client.getPost({ postId: 'VLO8u7UXqclQ7byjfMEX0' })
+console.log(post.getPost?.content)
 ```
 
 ### Authenticated requests
@@ -50,8 +50,8 @@ const client = createMosirClient({
   token: process.env.MOSIR_API_TOKEN,
 })
 
-const account = await client.getCurrentAccount()
-console.log(account.getCurrentAccount.username)
+const notifications = await client.getNotifications({ limit: 20 })
+console.log(notifications.getNotifications.edges)
 ```
 
 ## Custom endpoint
@@ -65,22 +65,74 @@ const client = createMosirClient({
 })
 ```
 
-## Wrapped operations
+## Common usage examples
 
-All curated public operations are generated as callable methods.
 Both the generated PascalCase names and SDK-friendly camelCase aliases are available, but camelCase is preferred.
 
+### Get a post
+
 ```ts
-const client = createMosirClient({ token })
+const client = createMosirClient({})
 
 const post = await client.getPost({ postId: 'VLO8u7UXqclQ7byjfMEX0' })
-const feed = await client.getFeedPosts({ limit: 20 })
 
 console.log(post.getPost?.author.username)
 console.log(post.getPost?.content)
 ```
 
-The same methods are also available under `client.sdk`:
+### Get replies under a post
+
+Replies are exposed as nested GraphQL fields on `Post`, so this is a good case for direct GraphQL usage:
+
+```ts
+const client = createMosirClient({})
+
+const replies = await client.request(
+  /* GraphQL */ `
+    query GetPostReplies($postId: ID!, $limit: Int) {
+      getPost(postId: $postId) {
+        id
+        commentsRecent(limit: $limit) {
+          edges {
+            id
+            content
+            createdAt
+            author {
+              id
+              username
+              displayName
+            }
+          }
+          pageInfo {
+            endCursor
+            hasNextPage
+            totalCount
+          }
+        }
+      }
+    }
+  `,
+  {
+    postId: 'VLO8u7UXqclQ7byjfMEX0',
+    limit: 3,
+  },
+)
+
+console.log(replies.getPost?.commentsRecent.edges)
+```
+
+### Get notifications
+
+```ts
+const client = createMosirClient({
+  token: process.env.MOSIR_API_TOKEN,
+})
+
+const notifications = await client.getNotifications({ limit: 20 })
+console.log(notifications.getNotifications.edges)
+```
+
+The same generated methods are also available under `client.sdk`:
 
 ```ts
 const account = await client.sdk.getCurrentAccount()
@@ -146,12 +198,29 @@ console.log(post.getPost)
 ### Raw GraphQL string usage
 
 ```ts
-const data = await client.request(
+const replies = await client.request(
   /* GraphQL */ `
-    query GetUnreadNotificationCount {
-      getUnreadNotificationCount
+    query GetPostReplies($postId: ID!, $limit: Int) {
+      getPost(postId: $postId) {
+        id
+        commentsRecent(limit: $limit) {
+          edges {
+            id
+            content
+            createdAt
+            author {
+              username
+              displayName
+            }
+          }
+        }
+      }
     }
   `,
+  {
+    postId: 'VLO8u7UXqclQ7byjfMEX0',
+    limit: 3,
+  },
 )
 ```
 
