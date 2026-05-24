@@ -349,3 +349,8 @@ task check
 - `public.operations.graphql` — copied curated operation document
 - `src/generated/graphql.ts` — generated GraphQL types and typed documents
 - `src/generated/sdk.ts` — generated operation wrapper methods
+
+## License
+
+This project is licensed under the GNU Lesser General Public License v3.0 (LGPL-3.0).
+See [`LICENSE`](./LICENSE) for details.
