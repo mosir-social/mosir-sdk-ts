@@ -1,6 +1,6 @@
 {
   "name": "mosir-sdk-ts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeScript SDK for the Mosir public GraphQL API",
   "license": "LGPL-3.0-or-later",
   "sideEffects": false,
