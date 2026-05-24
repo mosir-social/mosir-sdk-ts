@@ -37,7 +37,7 @@ const client = createMosirClient({
   token: process.env.MOSIR_API_TOKEN,
 })
 
-const account = await client.GetCurrentAccount()
+const account = await client.getCurrentAccount()
 console.log(account.getCurrentAccount.username)
 ```
 
@@ -59,14 +59,14 @@ All curated public operations are generated as callable methods.
 ```ts
 const client = createMosirClient({ token })
 
-const post = await client.GetPost({ postId: 'post_123' })
-const feed = await client.GetFeedPosts({ limit: 20 })
+const post = await client.getPost({ postId: 'post_123' })
+const feed = await client.getFeedPosts({ limit: 20 })
 ```
 
 The same methods are also available under `client.sdk`:
 
 ```ts
-const account = await client.sdk.GetCurrentAccount()
+const account = await client.sdk.getCurrentAccount()
 ```
 
 ## SSE subscriptions
@@ -74,7 +74,7 @@ const account = await client.sdk.GetCurrentAccount()
 ```ts
 const client = createMosirClient({ token })
 
-for await (const event of client.PostUpdated({ postId: 'post_123' })) {
+for await (const event of client.postUpdated({ postId: 'post_123' })) {
   console.log(event.postUpdated.id)
 }
 ```

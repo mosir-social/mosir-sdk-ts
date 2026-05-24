@@ -52,8 +52,12 @@ export interface MosirBaseClient {
   dispose(): void;
 }
 
-export type MosirClient = MosirBaseClient & Sdk;
-export type SdkRequester = Sdk;
+export type CamelCaseSdk<T extends Record<string, unknown>> = T & {
+  [K in keyof T as K extends string ? Uncapitalize<K> : never]: T[K];
+};
+
+export type SdkRequester = CamelCaseSdk<Sdk>;
+export type MosirClient = MosirBaseClient & SdkRequester;
 
 export function createMosirClient(options: MosirClientOptions): MosirClient {
   const endpoint = options.endpoint ?? DEFAULT_ENDPOINT;
@@ -62,7 +66,7 @@ export function createMosirClient(options: MosirClientOptions): MosirClient {
   const requester: Requester<MosirRequestOptions> = (document, variables, requestOptions) =>
     transport.execute(document, variables as Record<string, unknown> | undefined, requestOptions);
 
-  const sdk = getSdk(requester);
+  const sdk = withCamelCaseAliases(getSdk(requester));
 
   return Object.assign(
     {
@@ -259,4 +263,17 @@ function mergeHeaders(...headersList: Array<HeadersInit | undefined>): Headers {
 
 function headersToRecord(headers: Headers): Record<string, string> {
   return Object.fromEntries(headers.entries());
+}
+
+function withCamelCaseAliases<T extends Record<string, unknown>>(sdk: T): CamelCaseSdk<T> {
+  const aliases: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(sdk)) {
+    const camelKey = key.slice(0, 1).toLowerCase() + key.slice(1);
+    if (!(camelKey in sdk)) {
+      aliases[camelKey] = value;
+    }
+  }
+
+  return Object.assign({}, sdk, aliases) as CamelCaseSdk<T>;
 }
