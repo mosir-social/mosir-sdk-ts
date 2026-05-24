@@ -1,9 +1,16 @@
 {
   "name": "mosir-sdk-ts",
   "version": "0.1.0",
-  "private": true,
   "description": "TypeScript SDK for the Mosir public GraphQL API",
   "license": "UNLICENSED",
+  "sideEffects": false,
+  "keywords": [
+    "mosir",
+    "graphql",
+    "sdk",
+    "typescript",
+    "sse"
+  ],
   "type": "module",
   "packageManager": "pnpm@11.1.0",
   "engines": {
@@ -23,13 +30,15 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
     "public.graphqls",
     "public.operations.graphql",
-    "README.md"
+    "README.md",
+    "package.json"
   ],
   "scripts": {
     "codegen": "graphql-codegen --config codegen.ts && node ./scripts/fix-generated-sdk.mjs",

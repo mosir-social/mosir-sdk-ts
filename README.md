@@ -25,10 +25,23 @@ WebSocket support is intentionally not bundled. If you want WebSocket subscripti
 ## Install
 
 ```bash
-pnpm add mosir-sdk-ts graphql
+pnpm add mosir-sdk-ts
 ```
 
 ## Quick start
+
+### Anonymous/public requests
+
+```ts
+import { createMosirClient } from 'mosir-sdk-ts'
+
+const client = createMosirClient({})
+
+const topics = await client.getTopics({ limit: 10 })
+console.log(topics.getTopics.map((topic) => topic.title))
+```
+
+### Authenticated requests
 
 ```ts
 import { createMosirClient } from 'mosir-sdk-ts'
@@ -55,6 +68,7 @@ const client = createMosirClient({
 ## Wrapped operations
 
 All curated public operations are generated as callable methods.
+Both the generated PascalCase names and SDK-friendly camelCase aliases are available, but camelCase is preferred.
 
 ```ts
 const client = createMosirClient({ token })
@@ -95,7 +109,7 @@ for await (const event of client.subscribe(PostUpdatedDocument, { postId: 'post_
 
 Authentication is optional. Pass `token` for authenticated operations, or omit it for public/non-authenticated requests.
 
-Use generated typed documents directly:
+### Typed document usage
 
 ```ts
 import { createMosirClient, GetNotificationsDocument } from 'mosir-sdk-ts'
@@ -107,7 +121,7 @@ const data = await client.request(GetNotificationsDocument, {
 })
 ```
 
-You can also pass a raw GraphQL string:
+### Raw GraphQL string usage
 
 ```ts
 const data = await client.request(
@@ -122,7 +136,14 @@ const data = await client.request(
 ## WebSocket usage
 
 WebSocket transport is not bundled.
-If you want it, use your own GraphQL WebSocket client against the same endpoint and reuse the exported generated documents/types from this package.
+If you want it, use your own GraphQL WebSocket client against the same endpoint and reuse the exported generated documents and types from this package.
+
+## Notes
+
+- default endpoint: `https://beta.mosir.app/api/v1`
+- `token` is optional
+- subscriptions use SSE in this SDK
+- direct GraphQL usage is supported through exported typed documents and `client.request(...)` / `client.subscribe(...)`
 
 ## Development
 
