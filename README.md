@@ -32,6 +32,8 @@ pnpm add mosir-sdk-ts
 
 ### Anonymous/public requests
 
+Only public data needs no token.
+
 ```ts
 import { createMosirClient } from 'mosir-sdk-ts'
 
@@ -42,6 +44,8 @@ console.log(post.getPost?.content)
 ```
 
 ### Authenticated requests
+
+Use a token for authenticated operations such as notifications.
 
 ```ts
 import { createMosirClient } from 'mosir-sdk-ts'
@@ -133,6 +137,33 @@ const notifications = await client.getNotifications({ limit: 20 })
 console.log(notifications.getNotifications.edges)
 ```
 
+### Fetch media bytes from a `Media` result
+
+```ts
+const client = createMosirClient({})
+const post = await client.getPost({ postId: 'VLO8u7UXqclQ7byjfMEX0' })
+
+const media = post.getPost?.attachments[0]?.media
+if (media) {
+  const response = await client.fetchMedia(media)
+  const bytes = await response.arrayBuffer()
+  console.log(bytes.byteLength)
+}
+```
+
+### Fetch preview image for a post, profile, or collection
+
+```ts
+const client = createMosirClient({})
+
+const previewUrl = client.getPreviewImageUrl('post', 'VLO8u7UXqclQ7byjfMEX0')
+console.log(previewUrl)
+
+const previewResponse = await client.fetchPreviewImage('post', 'VLO8u7UXqclQ7byjfMEX0')
+const previewBytes = await previewResponse.arrayBuffer()
+console.log(previewBytes.byteLength)
+```
+
 The same generated methods are also available under `client.sdk`:
 
 ```ts
@@ -149,6 +180,8 @@ for await (const event of client.postUpdated({ postId: 'VLO8u7UXqclQ7byjfMEX0' }
 }
 ```
 
+This SDK uses SSE for subscriptions by default.
+
 You can also use the lower-level raw subscription API:
 
 ```ts
@@ -163,7 +196,7 @@ for await (const event of client.subscribe(PostUpdatedDocument, { postId: 'VLO8u
 
 ## Raw GraphQL access
 
-Authentication is optional. Pass `token` for authenticated operations, or omit it for public/non-authenticated requests.
+Authentication is optional. Pass `token` for authenticated operations, or omit it when accessing only public data.
 
 ### Typed document usage
 
@@ -233,7 +266,9 @@ If you want it, use your own GraphQL WebSocket client against the same endpoint 
 ## Notes
 
 - default endpoint: `https://beta.mosir.app/api/v1`
-- `token` is optional
+- `token` is optional for public data and required only for authenticated operations
+- media helpers are available through `selectMediaFile(...)` and `fetchMedia(...)`
+- preview image helpers are available through `getPreviewImageUrl(...)` and `fetchPreviewImage(...)`
 - subscriptions use SSE in this SDK
 - direct GraphQL usage is supported through exported typed documents and `client.request(...)` / `client.subscribe(...)`
 

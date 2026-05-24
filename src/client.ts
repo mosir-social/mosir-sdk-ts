@@ -9,9 +9,26 @@ import {
   type OperationTypeNode,
 } from 'graphql';
 
+import type { MediaFileMetadata, MediaFileProfile, MediaMetadata } from './generated/graphql';
 import { getSdk, type Requester, type Sdk } from './generated/sdk';
 
 export const DEFAULT_ENDPOINT = 'https://beta.mosir.app/api/v1';
+
+export type PreviewImageKind = 'post' | 'profile' | 'postCollection';
+
+export interface MediaFetchOptions {
+  profile?: MediaFileProfile;
+  fetch?: typeof fetch;
+  signal?: AbortSignal;
+  headers?: HeadersInit;
+}
+
+export interface PreviewImageFetchOptions {
+  endpoint?: string;
+  fetch?: typeof fetch;
+  signal?: AbortSignal;
+  headers?: HeadersInit;
+}
 
 export interface MosirClientOptions {
   token?: string;
@@ -48,6 +65,20 @@ export interface MosirBaseClient {
     variables?: TVariables,
     options?: MosirRequestOptions,
   ): Promise<TResult> | AsyncIterable<TResult>;
+  selectMediaFile(
+    media: Pick<MediaMetadata, 'files'>,
+    profile?: MediaFileProfile,
+  ): MediaFileMetadata | undefined;
+  fetchMedia(
+    media: Pick<MediaMetadata, 'files'>,
+    options?: MediaFetchOptions,
+  ): Promise<Response>;
+  getPreviewImageUrl(kind: PreviewImageKind, id: string): string;
+  fetchPreviewImage(
+    kind: PreviewImageKind,
+    id: string,
+    options?: Omit<PreviewImageFetchOptions, 'endpoint'>,
+  ): Promise<Response>;
   sdk: SdkRequester;
   dispose(): void;
 }
@@ -75,6 +106,23 @@ export function createMosirClient(options: MosirClientOptions): MosirClient {
       request: transport.request.bind(transport),
       subscribe: transport.subscribe.bind(transport),
       execute: transport.execute.bind(transport),
+      selectMediaFile,
+      fetchMedia: (media: Pick<MediaMetadata, 'files'>, fetchOptions?: MediaFetchOptions) =>
+        fetchMedia(media, {
+          ...fetchOptions,
+          fetch: fetchOptions?.fetch ?? options.fetch,
+        }),
+      getPreviewImageUrl: (kind: PreviewImageKind, id: string) => getPreviewImageUrl(kind, id, endpoint),
+      fetchPreviewImage: (
+        kind: PreviewImageKind,
+        id: string,
+        fetchOptions?: Omit<PreviewImageFetchOptions, 'endpoint'>,
+      ) =>
+        fetchPreviewImage(kind, id, {
+          endpoint,
+          ...fetchOptions,
+          fetch: fetchOptions?.fetch ?? options.fetch,
+        }),
       sdk,
       dispose: transport.dispose.bind(transport),
     },
@@ -259,6 +307,74 @@ function mergeHeaders(...headersList: Array<HeadersInit | undefined>): Headers {
   }
 
   return headers;
+}
+
+const MEDIA_PROFILE_FALLBACK_ORDER: MediaFileProfile[] = [
+  'QUALITY',
+  'COMPATIBLE',
+  'THUMBNAIL',
+  'ANIMATED_COMPATIBLE',
+  'ANIMATED_THUMBNAIL',
+];
+
+const PREVIEW_IMAGE_ROUTE_MAP: Record<PreviewImageKind, string> = {
+  post: 'postopengraph',
+  profile: 'profileopengraph',
+  postCollection: 'collectionopengraph',
+};
+
+export function selectMediaFile(
+  media: Pick<MediaMetadata, 'files'>,
+  profile?: MediaFileProfile,
+): MediaFileMetadata | undefined {
+  if (profile) {
+    return media.files.find((file) => file.profile === profile);
+  }
+
+  for (const candidateProfile of MEDIA_PROFILE_FALLBACK_ORDER) {
+    const candidate = media.files.find((file) => file.profile === candidateProfile);
+    if (candidate) {
+      return candidate;
+    }
+  }
+
+  return media.files[0];
+}
+
+export async function fetchMedia(
+  media: Pick<MediaMetadata, 'files'>,
+  options: MediaFetchOptions = {},
+): Promise<Response> {
+  const file = selectMediaFile(media, options.profile);
+  if (!file) {
+    throw new Error('No media file is available for the requested media object.');
+  }
+
+  const fetchImplementation = options.fetch ?? fetch;
+  return fetchImplementation(file.url, {
+    headers: options.headers,
+    signal: options.signal,
+  });
+}
+
+export function getPreviewImageUrl(
+  kind: PreviewImageKind,
+  id: string,
+  endpoint: string = DEFAULT_ENDPOINT,
+): string {
+  return new URL(`/ogi/${PREVIEW_IMAGE_ROUTE_MAP[kind]}/${id}`, endpoint).toString();
+}
+
+export async function fetchPreviewImage(
+  kind: PreviewImageKind,
+  id: string,
+  options: PreviewImageFetchOptions = {},
+): Promise<Response> {
+  const fetchImplementation = options.fetch ?? fetch;
+  return fetchImplementation(getPreviewImageUrl(kind, id, options.endpoint), {
+    headers: options.headers,
+    signal: options.signal,
+  });
 }
 
 function headersToRecord(headers: Headers): Record<string, string> {
