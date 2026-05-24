@@ -37,7 +37,7 @@ import { createMosirClient } from 'mosir-sdk-ts'
 
 const client = createMosirClient({})
 
-const post = await client.getPost({ postId: 'VLO8u7UXqclQ7byjfMEX0' })
+const post = await client.getPost({ postId: '47awwiLrfk5snCOxFFoXG' })
 console.log(post.getPost?.content)
 ```
 
@@ -74,10 +74,11 @@ Both the generated PascalCase names and SDK-friendly camelCase aliases are avail
 ```ts
 const client = createMosirClient({})
 
-const post = await client.getPost({ postId: 'VLO8u7UXqclQ7byjfMEX0' })
+const post = await client.getPost({ postId: '47awwiLrfk5snCOxFFoXG' })
 
 console.log(post.getPost?.author.username)
 console.log(post.getPost?.content)
+console.log(post.getPost?.parentPostId)
 ```
 
 ### Get replies under a post
@@ -176,16 +177,17 @@ const data = await client.request(GetNotificationsDocument, {
 })
 ```
 
-Example real post lookup against `https://beta.mosir.app/api/v1`:
+Example real public post lookup against `https://beta.mosir.app/api/v1`:
 
 ```ts
-const post = await client.getPost({ postId: 'VLO8u7UXqclQ7byjfMEX0' })
+const post = await client.getPost({ postId: '47awwiLrfk5snCOxFFoXG' })
 
 console.log(post.getPost)
 // {
-//   id: 'VLO8u7UXqclQ7byjfMEX0',
-//   content: '**重力感應自動導航***（實驗性）*\n您現在可以不用手滑mosir。（手機限定）',
-//   createdAt: '2026-03-31T16:01:24Z',
+//   id: '47awwiLrfk5snCOxFFoXG',
+//   content: '比較次要的部分，現在在Facebook、X、Discord分享mosir連結時會得到比較不一樣的預覽圖片。',
+//   createdAt: '2026-05-23T13:12:41Z',
+//   parentPostId: 'rhXVhC4LE5B-IejgkyEU3',
 //   author: {
 //     id: 'GBWfRinN_Ya65D3SJaNS4',
 //     username: 'leemiyinghao',
