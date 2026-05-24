@@ -172,25 +172,51 @@ const account = await client.sdk.getCurrentAccount()
 
 ## SSE subscriptions
 
-```ts
-const client = createMosirClient({ token })
+Subscriptions let your app receive updates from Mosir in near real time without polling.
+This SDK uses **SSE** (Server-Sent Events) for subscriptions by default.
 
-for await (const event of client.postUpdated({ postId: 'VLO8u7UXqclQ7byjfMEX0' })) {
-  console.log(event.postUpdated.id)
+A good example is a Discord bot:
+- subscribe to `postCreatedByAuthor`
+- when a creator publishes something new, format it
+- send a message into a Discord channel
+
+That way the bot reacts as soon as something changes, instead of repeatedly calling the API every few seconds.
+SSE is especially useful for backend workers, bots, notification relays, and other long-running processes that want a simple one-way stream of events from the server.
+For public subscriptions like `postCreatedByAuthor`, a token is not required.
+
+Note: each SSE connection lasts at most 1 hour. In practice, network conditions may cause it to end earlier.
+If you build a bot, worker, or relay process, make sure you implement reconnect logic.
+
+```ts
+const client = createMosirClient({})
+
+const profile = await client.getAccountProfile({ username: 'leemiyinghao' })
+const authorId = profile.getAccountProfile.id
+
+for await (const event of client.postCreatedByAuthor({
+  authorId,
+  postType: 'POST',
+})) {
+  console.log(event.postCreatedByAuthor.id)
+  console.log(event.postCreatedByAuthor.content)
 }
 ```
-
-This SDK uses SSE for subscriptions by default.
 
 You can also use the lower-level raw subscription API:
 
 ```ts
-import { PostUpdatedDocument } from 'mosir-sdk-ts'
+import { PostCreatedByAuthorDocument } from 'mosir-sdk-ts'
 
-const client = createMosirClient({ token })
+const client = createMosirClient({})
 
-for await (const event of client.subscribe(PostUpdatedDocument, { postId: 'VLO8u7UXqclQ7byjfMEX0' })) {
-  console.log(event.postUpdated.content)
+const profile = await client.getAccountProfile({ username: 'leemiyinghao' })
+const authorId = profile.getAccountProfile.id
+
+for await (const event of client.subscribe(PostCreatedByAuthorDocument, {
+  authorId,
+  postType: 'POST',
+})) {
+  console.log(event.postCreatedByAuthor.content)
 }
 ```
 
@@ -267,6 +293,7 @@ If you want it, use your own GraphQL WebSocket client against the same endpoint 
 
 - default endpoint: `https://beta.mosir.app/api/v1`
 - `token` is optional for public data and required only for authenticated operations
+- the same applies to subscriptions: public subscription data does not require a token
 - media helpers are available through `selectMediaFile(...)` and `fetchMedia(...)`
 - preview image helpers are available through `getPreviewImageUrl(...)` and `fetchPreviewImage(...)`
 - subscriptions use SSE in this SDK
