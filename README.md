@@ -73,8 +73,11 @@ Both the generated PascalCase names and SDK-friendly camelCase aliases are avail
 ```ts
 const client = createMosirClient({ token })
 
-const post = await client.getPost({ postId: 'post_123' })
+const post = await client.getPost({ postId: 'VLO8u7UXqclQ7byjfMEX0' })
 const feed = await client.getFeedPosts({ limit: 20 })
+
+console.log(post.getPost?.author.username)
+console.log(post.getPost?.content)
 ```
 
 The same methods are also available under `client.sdk`:
@@ -88,7 +91,7 @@ const account = await client.sdk.getCurrentAccount()
 ```ts
 const client = createMosirClient({ token })
 
-for await (const event of client.postUpdated({ postId: 'post_123' })) {
+for await (const event of client.postUpdated({ postId: 'VLO8u7UXqclQ7byjfMEX0' })) {
   console.log(event.postUpdated.id)
 }
 ```
@@ -100,7 +103,7 @@ import { PostUpdatedDocument } from 'mosir-sdk-ts'
 
 const client = createMosirClient({ token })
 
-for await (const event of client.subscribe(PostUpdatedDocument, { postId: 'post_123' })) {
+for await (const event of client.subscribe(PostUpdatedDocument, { postId: 'VLO8u7UXqclQ7byjfMEX0' })) {
   console.log(event.postUpdated.content)
 }
 ```
@@ -119,6 +122,25 @@ const client = createMosirClient({ token })
 const data = await client.request(GetNotificationsDocument, {
   limit: 20,
 })
+```
+
+Example real post lookup against `https://beta.mosir.app/api/v1`:
+
+```ts
+const post = await client.getPost({ postId: 'VLO8u7UXqclQ7byjfMEX0' })
+
+console.log(post.getPost)
+// {
+//   id: 'VLO8u7UXqclQ7byjfMEX0',
+//   content: '**重力感應自動導航***（實驗性）*\n您現在可以不用手滑mosir。（手機限定）',
+//   createdAt: '2026-03-31T16:01:24Z',
+//   author: {
+//     id: 'GBWfRinN_Ya65D3SJaNS4',
+//     username: 'leemiyinghao',
+//     displayName: 'catLee'
+//   },
+//   ...
+// }
 ```
 
 ### Raw GraphQL string usage
