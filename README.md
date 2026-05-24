@@ -6,7 +6,7 @@ TypeScript SDK for the Mosir public GraphQL API.
 
 - generated TypeScript types from `public.graphqls`
 - generated operation wrappers from `public.operations.graphql`
-- built-in Bearer token auth
+- optional Bearer token auth
 - default endpoint: `https://beta.mosir.app/api/v1`
 - SSE subscription support out of the box
 - raw GraphQL access for developers who want direct control
@@ -34,7 +34,7 @@ pnpm add mosir-sdk-ts graphql
 import { createMosirClient } from 'mosir-sdk-ts'
 
 const client = createMosirClient({
-  token: process.env.MOSIR_API_TOKEN!,
+  token: process.env.MOSIR_API_TOKEN,
 })
 
 const account = await client.GetCurrentAccount()
@@ -47,7 +47,7 @@ console.log(account.getCurrentAccount.username)
 import { createMosirClient } from 'mosir-sdk-ts'
 
 const client = createMosirClient({
-  token: process.env.MOSIR_API_TOKEN!,
+  token: process.env.MOSIR_API_TOKEN,
   endpoint: 'https://example.com/api/v1',
 })
 ```
@@ -92,6 +92,8 @@ for await (const event of client.subscribe(PostUpdatedDocument, { postId: 'post_
 ```
 
 ## Raw GraphQL access
+
+Authentication is optional. Pass `token` for authenticated operations, or omit it for public/non-authenticated requests.
 
 Use generated typed documents directly:
 

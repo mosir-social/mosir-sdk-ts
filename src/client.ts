@@ -14,7 +14,7 @@ import { getSdk, type Requester, type Sdk } from './generated/sdk';
 export const DEFAULT_ENDPOINT = 'https://beta.mosir.app/api/v1';
 
 export interface MosirClientOptions {
-  token: string;
+  token?: string;
   endpoint?: string;
   headers?: HeadersInit;
   fetch?: typeof fetch;
@@ -32,7 +32,7 @@ export type MosirDocument<
 
 export interface MosirBaseClient {
   readonly endpoint: string;
-  readonly token: string;
+  readonly token?: string;
   request<TResult, TVariables extends object = Record<string, unknown>>(
     document: MosirDocument<TResult, TVariables>,
     variables?: TVariables,
@@ -80,7 +80,7 @@ export function createMosirClient(options: MosirClientOptions): MosirClient {
 
 class MosirTransport {
   private readonly endpoint: string;
-  private readonly token: string;
+  private readonly token?: string;
   private readonly graphQLClient: GraphQLClient;
   private readonly defaultHeaders?: HeadersInit;
   private readonly fetchImplementation?: typeof fetch;
@@ -176,7 +176,11 @@ class MosirTransport {
     });
   }
 
-  private get authHeaders(): HeadersInit {
+  private get authHeaders(): HeadersInit | undefined {
+    if (!this.token) {
+      return undefined;
+    }
+
     return {
       Authorization: `Bearer ${this.token}`,
     };

@@ -9,11 +9,13 @@ export default defineConfig({
   target: 'es2022',
   platform: 'neutral',
   hash: false,
-  external: [
-    'graphql',
-    'graphql-request',
-    'graphql-sse',
-    '@graphql-typed-document-node/core',
-  ],
+  deps: {
+    neverBundle: [
+      'graphql',
+      'graphql-request',
+      'graphql-sse',
+      '@graphql-typed-document-node/core',
+    ],
+  },
   outDir: 'dist',
 });
