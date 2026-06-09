@@ -393,6 +393,7 @@ export type PostVisibility = {
 
 export type PostVisibilityPolicy =
   | 'FOLLOWERS'
+  | 'LOGGED_IN_ONLY'
   | 'MUTUAL_FOLLOWERS'
   | 'PUBLIC'
   | 'TAG_MEMBERS';
