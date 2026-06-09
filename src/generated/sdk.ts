@@ -40,6 +40,7 @@ import * as Operations from './graphql';
 
 
 
+
 export type Requester<C = {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C>(requester: Requester<C>) {
   return {
@@ -96,6 +97,9 @@ export function getSdk<C>(requester: Requester<C>) {
     },
     GetPostCollection(variables: Operations.GetPostCollectionQueryVariables, options?: C): Promise<Operations.GetPostCollectionQuery> {
       return requester<Operations.GetPostCollectionQuery, Operations.GetPostCollectionQueryVariables>(Operations.GetPostCollectionDocument, variables, options) as Promise<Operations.GetPostCollectionQuery>;
+    },
+    SearchPostCollections(variables: Operations.SearchPostCollectionsQueryVariables, options?: C): Promise<Operations.SearchPostCollectionsQuery> {
+      return requester<Operations.SearchPostCollectionsQuery, Operations.SearchPostCollectionsQueryVariables>(Operations.SearchPostCollectionsDocument, variables, options) as Promise<Operations.SearchPostCollectionsQuery>;
     },
     GetPostCollectionsByAuthor(variables: Operations.GetPostCollectionsByAuthorQueryVariables, options?: C): Promise<Operations.GetPostCollectionsByAuthorQuery> {
       return requester<Operations.GetPostCollectionsByAuthorQuery, Operations.GetPostCollectionsByAuthorQueryVariables>(Operations.GetPostCollectionsByAuthorDocument, variables, options) as Promise<Operations.GetPostCollectionsByAuthorQuery>;
