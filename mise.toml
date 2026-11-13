@@ -1,0 +1,51 @@
+min_version = "2026.11.0"
+
+[settings]
+task.source_freshness_hash_contents = true
+
+[tasks.install]
+description = "Install dependencies with pnpm"
+run = "pnpm install"
+
+[tasks.codegen]
+description = "Generate GraphQL SDK artifacts from public schema and operations"
+run = "pnpm run codegen"
+sources = [
+  "public.graphqls",
+  "public.operations.graphql",
+  "codegen.ts",
+  "scripts/fix-generated-sdk.mjs",
+  "package.json",
+  "pnpm-lock.yaml",
+]
+outputs = ["src/generated/graphql.ts", "src/generated/sdk.ts"]
+
+[tasks.build]
+description = "Build the SDK as ESM + CJS with declaration files"
+depends = ["codegen"]
+run = "pnpm run build"
+sources = [
+  "src/**/*.ts",
+  "public.graphqls",
+  "public.operations.graphql",
+  "codegen.ts",
+  "scripts/fix-generated-sdk.mjs",
+  "tsconfig.json",
+  "tsdown.config.ts",
+  "package.json",
+  "pnpm-lock.yaml",
+]
+outputs = ["dist/index.js", "dist/index.cjs", "dist/index.d.ts"]
+
+[tasks.typecheck]
+description = "Run TypeScript typechecking"
+depends = ["codegen"]
+run = "pnpm run typecheck"
+
+[tasks.clean]
+description = "Remove generated and build output"
+run = "pnpm run clean"
+
+[tasks.check]
+description = "Run code generation, typechecking, and build"
+run = "pnpm run check"
