@@ -313,34 +313,38 @@ If you want it, use your own GraphQL WebSocket client against the same endpoint 
 
 ## Development
 
+Install [mise](https://mise.jdx.dev/getting-started.html) 2026.11.0 or later,
+Node.js, and the pnpm version in `package.json`. Run `mise trust` once, then
+`mise tasks` to list tasks or `mise run <task> --help` for task help.
+
 ### Install
 
 ```bash
-task install
+mise run install
 ```
 
 ### Generate code
 
 ```bash
-task codegen
+mise run codegen
 ```
 
 ### Typecheck
 
 ```bash
-task typecheck
+mise run typecheck
 ```
 
 ### Build
 
 ```bash
-task build
+mise run build
 ```
 
 ### Full check
 
 ```bash
-task check
+mise run check
 ```
 
 ## Repo artifacts
